@@ -2,6 +2,7 @@ package test
 
 import (
 	"bwa-campaign-app/app"
+	"bwa-campaign-app/helper"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/repository"
 	"bwa-campaign-app/service"
@@ -26,4 +27,27 @@ func TestUserServiceRegisterUser(t *testing.T) {
 	})
 
 	assert.Equal(t, "otong@test.com", registerUser.Email)
+}
+
+func TestUserLogin(t *testing.T) {
+	userService := newUserService()
+	input := web.LoginUserInput{
+		Email:    "mario@test.com",
+		Password: "123",
+	}
+	loginUser, err := userService.LoginUser(input)
+	helper.PanicIfError(err)
+	//if err != nil {
+	//	log.Fatal(err.Error())
+	//}
+	assert.Equal(t, "mario@test.com", loginUser.Email)
+	assert.Equal(t, "FrontEnd", loginUser.Occupation)
+}
+
+func TestCheckEmail(t *testing.T) {
+	userService := newUserService()
+	emailAvailability, err := userService.CheckEmailAvailability(web.CheckEmailInput{Email: "mario@test.com"})
+	helper.PanicIfError(err)
+
+	assert.False(t, emailAvailability)
 }

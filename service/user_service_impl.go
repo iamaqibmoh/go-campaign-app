@@ -4,6 +4,7 @@ import (
 	"bwa-campaign-app/model/domain"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/repository"
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -11,8 +12,37 @@ type UserServiceImpl struct {
 	repository.UserRepository
 }
 
-func NewUserService(userRepository repository.UserRepository) UserService {
-	return &UserServiceImpl{UserRepository: userRepository}
+func (s *UserServiceImpl) CheckEmailAvailability(input web.CheckEmailInput) (bool, error) {
+	findByEmail, err := s.UserRepository.FindByEmail(input.Email)
+	if err != nil {
+		return false, err
+	}
+
+	if findByEmail.ID == 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (s *UserServiceImpl) LoginUser(input web.LoginUserInput) (domain.User, error) {
+	findByEmail, err := s.UserRepository.FindByEmail(input.Email)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	if findByEmail.ID == 0 {
+		if err != nil {
+			return domain.User{}, errors.New("Login failed")
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(findByEmail.PasswordHash), []byte(input.Password))
+	if err != nil {
+		return domain.User{}, errors.New("Login failed")
+	}
+
+	return findByEmail, nil
 }
 
 func (s *UserServiceImpl) RegisterUser(input web.RegisterUserInput) (domain.User, error) {
@@ -35,4 +65,8 @@ func (s *UserServiceImpl) RegisterUser(input web.RegisterUserInput) (domain.User
 	}
 
 	return save, nil
+}
+
+func NewUserService(userRepository repository.UserRepository) UserService {
+	return &UserServiceImpl{UserRepository: userRepository}
 }
