@@ -51,3 +51,11 @@ func TestCheckEmail(t *testing.T) {
 
 	assert.False(t, emailAvailability)
 }
+
+func TestUploadAvatar(t *testing.T) {
+	userService := newUserService()
+	uploadAvatar, err := userService.UploadAvatar(1, "images/1-avatar.jpg")
+	helper.PanicIfError(err)
+
+	assert.Equal(t, "images/1-avatar.jpg", uploadAvatar.Avatar)
+}

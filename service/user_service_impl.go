@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bwa-campaign-app/helper"
 	"bwa-campaign-app/model/domain"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/repository"
@@ -10,6 +11,18 @@ import (
 
 type UserServiceImpl struct {
 	repository.UserRepository
+}
+
+func (s *UserServiceImpl) UploadAvatar(id int, fileLocation string) (domain.User, error) {
+	findByID, err := s.UserRepository.FindByID(id)
+	helper.PanicIfError(err)
+
+	findByID.Avatar = fileLocation
+
+	update, err := s.UserRepository.Update(findByID)
+	helper.PanicIfError(err)
+
+	return update, nil
 }
 
 func (s *UserServiceImpl) CheckEmailAvailability(input web.CheckEmailInput) (bool, error) {

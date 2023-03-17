@@ -17,6 +17,7 @@ func main() {
 	api.POST("/users", userController.RegisterUser)
 	api.POST("/sessions", userController.LoginUser)
 	api.POST("/email_checkers", userController.CheckEmailAvailability)
+	api.POST("/avatars", userController.UploadAvatar)
 
 	router.Run(":2802")
 }

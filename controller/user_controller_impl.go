@@ -5,12 +5,54 @@ import (
 	"bwa-campaign-app/helper"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/service"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type UserControllerImpl struct {
 	service.UserService
+}
+
+func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
+	fileHeader, err := ctx.FormFile("avatar")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to upload avatar",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			gin.H{"is_uploaded": false}))
+		return
+	}
+	userID := 1
+	path := fmt.Sprintf("images/%d-%s", userID, fileHeader.Filename)
+
+	err = ctx.SaveUploadedFile(fileHeader, path)
+	if err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, helper.APIResponse(
+			"Failed to upload avatar",
+			http.StatusUnprocessableEntity,
+			"UnprocessableEntity",
+			gin.H{"is_uploaded": false}))
+		return
+	}
+
+	_, err = c.UserService.UploadAvatar(userID, path)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
+			"Failed to upload avatar",
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
+			gin.H{"is_uploaded": false}))
+		return
+	}
+
+	ctx.JSON(200, helper.APIResponse(
+		"Avatar successfully uploaded",
+		200,
+		"success",
+		gin.H{"is_uploaded": true},
+	))
 }
 
 func (c *UserControllerImpl) CheckEmailAvailability(ctx *gin.Context) {
