@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bwa-campaign-app/auth"
 	"bwa-campaign-app/formatter"
 	"bwa-campaign-app/helper"
 	"bwa-campaign-app/model/web"
@@ -12,6 +13,7 @@ import (
 
 type UserControllerImpl struct {
 	service.UserService
+	auth.JWTAuth
 }
 
 func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
@@ -114,11 +116,14 @@ func (c *UserControllerImpl) LoginUser(ctx *gin.Context) {
 		return
 	}
 
+	token, err := c.JWTAuth.GenerateToken(loginUser.ID)
+	helper.PanicIfError(err)
+
 	ctx.JSON(200, helper.APIResponse(
 		"You are logged in",
 		200,
 		"success",
-		formatter.UserResponseFormatter(loginUser),
+		formatter.UserResponseFormatter(loginUser, token),
 	))
 }
 
@@ -145,16 +150,19 @@ func (c *UserControllerImpl) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
+	token, err := c.JWTAuth.GenerateToken(registerUser.ID)
+	helper.PanicIfError(err)
+
 	apiResponse := helper.APIResponse(
 		"register user is successfully",
 		200,
 		"success",
-		formatter.UserResponseFormatter(registerUser),
+		formatter.UserResponseFormatter(registerUser, token),
 	)
 
 	ctx.JSON(200, &apiResponse)
 }
 
-func NewUserController(userService service.UserService) UserController {
-	return &UserControllerImpl{UserService: userService}
+func NewUserController(userService service.UserService, auth auth.JWTAuth) UserController {
+	return &UserControllerImpl{UserService: userService, JWTAuth: auth}
 }

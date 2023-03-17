@@ -2,6 +2,7 @@ package main
 
 import (
 	"bwa-campaign-app/app"
+	"bwa-campaign-app/auth"
 	"bwa-campaign-app/controller"
 	"bwa-campaign-app/repository"
 	"bwa-campaign-app/service"
@@ -10,7 +11,7 @@ import (
 func main() {
 	userRepository := repository.NewUserRepository(app.DBConnection())
 	userService := service.NewUserService(userRepository)
-	userController := controller.NewUserController(userService)
+	userController := controller.NewUserController(userService, auth.NewJWTAuth())
 
 	router := app.Router()
 	api := router.Group("/api/v1")
