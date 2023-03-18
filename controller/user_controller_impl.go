@@ -4,6 +4,7 @@ import (
 	"bwa-campaign-app/auth"
 	"bwa-campaign-app/formatter"
 	"bwa-campaign-app/helper"
+	"bwa-campaign-app/model/domain"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/service"
 	"fmt"
@@ -26,7 +27,8 @@ func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
 			gin.H{"is_uploaded": false}))
 		return
 	}
-	userID := 1
+
+	userID := ctx.MustGet("currentUser").(domain.User).ID
 	path := fmt.Sprintf("images/%d-%s", userID, fileHeader.Filename)
 
 	err = ctx.SaveUploadedFile(fileHeader, path)

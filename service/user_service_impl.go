@@ -13,6 +13,17 @@ type UserServiceImpl struct {
 	repository.UserRepository
 }
 
+func (s *UserServiceImpl) FindUserByID(id int) (domain.User, error) {
+	findByID, err := s.UserRepository.FindByID(id)
+	helper.PanicIfError(err)
+
+	if findByID.ID == 0 {
+		return findByID, errors.New("User not found")
+	}
+
+	return findByID, nil
+}
+
 func (s *UserServiceImpl) UploadAvatar(id int, fileLocation string) (domain.User, error) {
 	findByID, err := s.UserRepository.FindByID(id)
 	helper.PanicIfError(err)

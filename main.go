@@ -4,6 +4,7 @@ import (
 	"bwa-campaign-app/app"
 	"bwa-campaign-app/auth"
 	"bwa-campaign-app/controller"
+	"bwa-campaign-app/middleware"
 	"bwa-campaign-app/repository"
 	"bwa-campaign-app/service"
 )
@@ -11,14 +12,15 @@ import (
 func main() {
 	userRepository := repository.NewUserRepository(app.DBConnection())
 	userService := service.NewUserService(userRepository)
-	userController := controller.NewUserController(userService, auth.NewJWTAuth())
+	userAuth := auth.NewJWTAuth()
+	userController := controller.NewUserController(userService, userAuth)
 
 	router := app.Router()
 	api := router.Group("/api/v1")
 	api.POST("/users", userController.RegisterUser)
 	api.POST("/sessions", userController.LoginUser)
 	api.POST("/email_checkers", userController.CheckEmailAvailability)
-	api.POST("/avatars", userController.UploadAvatar)
+	api.POST("/avatars", middleware.AuthMiddleware(userAuth, userService), userController.UploadAvatar)
 
 	router.Run(":2802")
 }

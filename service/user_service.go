@@ -10,4 +10,5 @@ type UserService interface {
 	LoginUser(input web.LoginUserInput) (domain.User, error)
 	CheckEmailAvailability(input web.CheckEmailInput) (bool, error)
 	UploadAvatar(id int, fileLocation string) (domain.User, error)
+	FindUserByID(id int) (domain.User, error)
 }
