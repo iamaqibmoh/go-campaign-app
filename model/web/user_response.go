@@ -1,6 +1,6 @@
 package web
 
-type RegisterUserResponse struct {
+type UserResponse struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	Occupation string `json:"occupation"`

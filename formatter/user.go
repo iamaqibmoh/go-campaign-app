@@ -5,8 +5,8 @@ import (
 	"bwa-campaign-app/model/web"
 )
 
-func UserResponseFormatter(user domain.User, token string) web.RegisterUserResponse {
-	return web.RegisterUserResponse{
+func UserResponseFormatter(user domain.User, token string) web.UserResponse {
+	return web.UserResponse{
 		ID:         user.ID,
 		Name:       user.Name,
 		Occupation: user.Occupation,
