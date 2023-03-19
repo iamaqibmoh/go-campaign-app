@@ -31,6 +31,7 @@ func main() {
 
 	//campaigns endpoint
 	api.GET("/campaigns", campaignController.FindCampaigns)
+	api.POST("/campaigns", middleware.AuthMiddleware(userAuth, userService), campaignController.CreateCampaign)
 	api.GET("/campaigns/:id", campaignController.FindCampaignByID)
 
 	router.Run(":2802")

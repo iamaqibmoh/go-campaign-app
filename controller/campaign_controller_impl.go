@@ -3,6 +3,7 @@ package controller
 import (
 	"bwa-campaign-app/formatter"
 	"bwa-campaign-app/helper"
+	"bwa-campaign-app/model/domain"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/service"
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,37 @@ import (
 
 type CampaignControllerImpl struct {
 	service.CampaignService
+}
+
+func (c *CampaignControllerImpl) CreateCampaign(ctx *gin.Context) {
+	input := web.CreateCampaignInput{}
+	err := ctx.ShouldBindJSON(&input)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to create campaign",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			err.Error()))
+		return
+	}
+
+	user := ctx.MustGet("currentUser").(domain.User)
+	input.User = user
+
+	campaign, err := c.CampaignService.CreateCampaign(input)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
+			"Failed to create campaign",
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
+			err.Error()))
+		return
+	}
+
+	ctx.JSON(200, helper.APIResponse(
+		"Campaign is successfully created",
+		200, "success",
+		formatter.CampaignFormatter(campaign)))
 }
 
 func (c *CampaignControllerImpl) FindCampaignByID(ctx *gin.Context) {
