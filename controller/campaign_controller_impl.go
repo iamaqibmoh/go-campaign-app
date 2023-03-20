@@ -15,6 +15,47 @@ type CampaignControllerImpl struct {
 	service.CampaignService
 }
 
+func (c *CampaignControllerImpl) UpdateCampaign(ctx *gin.Context) {
+	inputURI := web.CampaignIDFromURI{}
+	err := ctx.ShouldBindUri(&inputURI)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to update campaign",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			helper.ValidationErrorsFormatter(err)))
+		return
+	}
+
+	inputForm := web.CreateCampaignInput{}
+	err = ctx.ShouldBindJSON(&inputForm)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to update campaign",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			helper.ValidationErrorsFormatter(err)))
+		return
+	}
+
+	inputForm.User = ctx.MustGet("currentUser").(domain.User)
+
+	campaign, err := c.CampaignService.UpdateCampaign(inputURI.ID, inputForm)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
+			"Failed to update campaign",
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
+			err.Error()))
+		return
+	}
+
+	ctx.JSON(200, helper.APIResponse(
+		"Campaign is successfully updated",
+		200, "success",
+		formatter.CampaignFormatter(campaign)))
+}
+
 func (c *CampaignControllerImpl) CreateCampaign(ctx *gin.Context) {
 	input := web.CreateCampaignInput{}
 	err := ctx.ShouldBindJSON(&input)

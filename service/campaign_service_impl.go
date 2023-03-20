@@ -1,15 +1,37 @@
 package service
 
 import (
+	"bwa-campaign-app/helper"
 	"bwa-campaign-app/model/domain"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/repository"
+	"errors"
 	"fmt"
 	"github.com/gosimple/slug"
 )
 
 type CampaignServiceImpl struct {
 	repository.CampaignRepository
+}
+
+func (s *CampaignServiceImpl) UpdateCampaign(id int, input web.CreateCampaignInput) (domain.Campaign, error) {
+	campaign, err := s.CampaignRepository.FindByID(id)
+	helper.PanicIfError(err)
+
+	campaign.Name = input.Name
+	campaign.Summary = input.ShortDescription
+	campaign.Description = input.Description
+	campaign.GoalAmount = input.GoalAmount
+	campaign.Perks = input.Perks
+
+	if campaign.UserID != input.User.ID {
+		return campaign, errors.New("You're not an owner of the campaign")
+	}
+
+	update, err := s.CampaignRepository.Update(campaign)
+	helper.PanicIfError(err)
+
+	return update, nil
 }
 
 func (s *CampaignServiceImpl) CreateCampaign(input web.CreateCampaignInput) (domain.Campaign, error) {

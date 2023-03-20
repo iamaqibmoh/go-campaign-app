@@ -9,6 +9,15 @@ type CampaignRepositoryImpl struct {
 	db *gorm.DB
 }
 
+func (r *CampaignRepositoryImpl) Update(campaign domain.Campaign) (domain.Campaign, error) {
+	err := r.db.Save(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+
+	return campaign, nil
+}
+
 func (r *CampaignRepositoryImpl) FindByID(id int) (domain.Campaign, error) {
 	campaign := domain.Campaign{}
 	err := r.db.Where("id=?", id).Preload("User").Preload("CampaignImages").Find(&campaign).Error
