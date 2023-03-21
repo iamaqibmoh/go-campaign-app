@@ -14,6 +14,24 @@ type TransactionControllerImpl struct {
 	service.TransactionsService
 }
 
+func (c *TransactionControllerImpl) GetByUserID(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(domain.User)
+	transactions, err := c.TransactionsService.GetByUserID(currentUser.ID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to user's transactions",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			gin.H{"errors": err.Error()}))
+		return
+	}
+
+	ctx.JSON(200, helper.APIResponse(
+		"List of user's transactions",
+		200, "success",
+		formatter.UserTransactionsFormatter(transactions)))
+}
+
 func (c *TransactionControllerImpl) GetByCampaignID(ctx *gin.Context) {
 	input := web.CampaignTransactionsInput{}
 	err := ctx.ShouldBindUri(&input)

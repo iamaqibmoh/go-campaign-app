@@ -54,6 +54,7 @@ func main() {
 
 	//transactions endpoint
 	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.GetByCampaignID)
+	api.GET("/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.GetByUserID)
 
 	router.Run(":2802")
 }

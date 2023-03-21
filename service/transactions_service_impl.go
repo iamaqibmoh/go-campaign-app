@@ -13,6 +13,13 @@ type TransactionsServiceImpl struct {
 	repository.CampaignRepository
 }
 
+func (s *TransactionsServiceImpl) GetByUserID(userID int) ([]domain.Transaction, error) {
+	transactions, err := s.TransactionsRepository.FindByUserID(userID)
+	helper.PanicIfError(err)
+
+	return transactions, nil
+}
+
 func (s *TransactionsServiceImpl) GetByCampaignID(input web.CampaignTransactionsInput) ([]domain.Transaction, error) {
 	campaign, err2 := s.CampaignRepository.FindByID(input.ID)
 	helper.PanicIfError(err2)
