@@ -10,27 +10,34 @@ import (
 )
 
 func main() {
-	//user endpoint dependency
+	//users endpoint dependency
 	userRepository := repository.NewUserRepository(app.DBConnection())
 	userService := service.NewUserService(userRepository)
 	userAuth := auth.NewJWTAuth()
 	userController := controller.NewUserController(userService, userAuth)
 
-	//campaign endpoint dependency
+	//campaigns endpoint dependency
 	campaignRepository := repository.NewCampaignRepository(app.DBConnection())
 	campaignService := service.NewCampaignService(campaignRepository)
 	campaignController := controller.NewCampaignController(campaignService)
 
-	//campaign image endpoint dependency
+	//campaign images endpoint dependency
 	campaignImageRepository := repository.NewCampaignImageRepository(app.DBConnection())
 	campaignImageService := service.NewCampaignImageService(campaignImageRepository, campaignRepository)
 	campaignImageController := controller.NewCampaignImageController(campaignImageService)
+
+	//transactions dependency
+	transactionsController := controller.NewTransactionController(
+		service.NewTransactionsService(
+			repository.NewTransactionsRepository(app.DBConnection()),
+			campaignRepository),
+	)
 
 	router := app.Router()
 	router.Static("/images", "./images")
 	api := router.Group("/api/v1")
 
-	//user endpoint
+	//users endpoint
 	api.POST("/users", userController.RegisterUser)
 	api.POST("/sessions", userController.LoginUser)
 	api.POST("/email-checkers", userController.CheckEmailAvailability)
@@ -42,8 +49,11 @@ func main() {
 	api.PUT("/campaigns/:id", middleware.AuthMiddleware(userAuth, userService), campaignController.UpdateCampaign)
 	api.GET("/campaigns/:id", campaignController.FindCampaignByID)
 
-	//campaign image endpoint
+	//campaign images endpoint
 	api.POST("/campaign-images", middleware.AuthMiddleware(userAuth, userService), campaignImageController.CreateCampaignImage)
+
+	//transactions endpoint
+	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.GetByCampaignID)
 
 	router.Run(":2802")
 }
