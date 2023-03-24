@@ -7,6 +7,7 @@ type CampaignDetailResponse struct {
 	ShortDescription string                           `json:"short_description"`
 	Description      string                           `json:"description"`
 	ImageURL         string                           `json:"image_url"`
+	BackerCount      int                              `json:"backer_count"`
 	GoalAmount       int                              `json:"goal_amount"`
 	CurrentAmount    int                              `json:"current_amount"`
 	Slug             string                           `json:"slug"`

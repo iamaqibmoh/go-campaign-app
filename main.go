@@ -27,11 +27,10 @@ func main() {
 	campaignImageController := controller.NewCampaignImageController(campaignImageService)
 
 	//transactions dependency
-	transactionsController := controller.NewTransactionController(
-		service.NewTransactionsService(
-			repository.NewTransactionsRepository(app.DBConnection()),
-			campaignRepository),
-	)
+	transactionsRepository := repository.NewTransactionsRepository(app.DBConnection())
+	midtransService := service.NewMidtransService(transactionsRepository, campaignRepository)
+	transactionsService := service.NewTransactionsService(transactionsRepository, campaignRepository, midtransService)
+	transactionsController := controller.NewTransactionsController(transactionsService, midtransService)
 
 	router := app.Router()
 	router.Static("/images", "./images")
@@ -55,6 +54,8 @@ func main() {
 	//transactions endpoint
 	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.GetByCampaignID)
 	api.GET("/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.GetByUserID)
+	api.POST("/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.CreateTransaction)
+	api.POST("/transactions/notification", transactionsController.GetMidtransNotification)
 
 	router.Run(":2802")
 }

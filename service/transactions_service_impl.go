@@ -11,6 +11,26 @@ import (
 type TransactionsServiceImpl struct {
 	repository.TransactionsRepository
 	repository.CampaignRepository
+	MidtransService
+}
+
+func (s *TransactionsServiceImpl) CreateTransaction(input web.CreateTransactionInput) (domain.Transaction, error) {
+	tr := domain.Transaction{}
+	tr.Amount = input.Amount
+	tr.CampaignID = input.CampaignID
+	tr.UserID = input.User.ID
+	tr.Status = "pending"
+
+	transaction, err := s.TransactionsRepository.Save(tr)
+	helper.PanicIfError(err)
+
+	paymentURL := s.MidtransService.GetPaymentURL(transaction, input.User)
+	transaction.PaymentURL = paymentURL
+
+	update, err := s.TransactionsRepository.Update(transaction)
+	helper.PanicIfError(err)
+
+	return update, nil
 }
 
 func (s *TransactionsServiceImpl) GetByUserID(userID int) ([]domain.Transaction, error) {
@@ -34,9 +54,10 @@ func (s *TransactionsServiceImpl) GetByCampaignID(input web.CampaignTransactions
 	return transactions, nil
 }
 
-func NewTransactionsService(transactionRepository repository.TransactionsRepository, campaignRepository repository.CampaignRepository) TransactionsService {
+func NewTransactionsService(transactionRepository repository.TransactionsRepository, campaignRepository repository.CampaignRepository, midtransService MidtransService) TransactionsService {
 	return &TransactionsServiceImpl{
 		TransactionsRepository: transactionRepository,
 		CampaignRepository:     campaignRepository,
+		MidtransService:        midtransService,
 	}
 }

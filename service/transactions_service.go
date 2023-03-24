@@ -8,4 +8,5 @@ import (
 type TransactionsService interface {
 	GetByCampaignID(input web.CampaignTransactionsInput) ([]domain.Transaction, error)
 	GetByUserID(userID int) ([]domain.Transaction, error)
+	CreateTransaction(input web.CreateTransactionInput) (domain.Transaction, error)
 }

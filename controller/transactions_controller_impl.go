@@ -6,15 +6,77 @@ import (
 	"bwa-campaign-app/model/domain"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/service"
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type TransactionControllerImpl struct {
+type TransactionsControllerImpl struct {
 	service.TransactionsService
+	service.MidtransService
 }
 
-func (c *TransactionControllerImpl) GetByUserID(ctx *gin.Context) {
+func (c *TransactionsControllerImpl) GetMidtransNotification(ctx *gin.Context) {
+	input := web.MidtransNotificationInput{}
+	err := ctx.ShouldBindJSON(&input)
+
+	bytes, _ := json.Marshal(input)
+	fmt.Println(string(bytes))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to process notification transaction",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			err.Error()))
+		return
+	}
+
+	err = c.MidtransService.PaymentProcess(input)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to process notification transaction",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			err.Error()))
+		return
+	}
+
+	ctx.JSON(200, input)
+}
+
+func (c *TransactionsControllerImpl) CreateTransaction(ctx *gin.Context) {
+	input := web.CreateTransactionInput{}
+	err := ctx.ShouldBindJSON(&input)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to create transaction",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			helper.ValidationErrorsFormatter(err)))
+		return
+	}
+
+	input.User = ctx.MustGet("currentUser").(domain.User)
+
+	transaction, err := c.TransactionsService.CreateTransaction(input)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+			"Failed to create transactions",
+			http.StatusBadRequest,
+			"BAD REQUEST",
+			err.Error()))
+		return
+	}
+
+	ctx.JSON(200, helper.APIResponse(
+		"Success to create transactions",
+		200, "success",
+		formatter.MidtransTransactionFormatter(transaction)))
+}
+
+func (c *TransactionsControllerImpl) GetByUserID(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(domain.User)
 	transactions, err := c.TransactionsService.GetByUserID(currentUser.ID)
 	if err != nil {
@@ -32,7 +94,7 @@ func (c *TransactionControllerImpl) GetByUserID(ctx *gin.Context) {
 		formatter.UserTransactionsFormatter(transactions)))
 }
 
-func (c *TransactionControllerImpl) GetByCampaignID(ctx *gin.Context) {
+func (c *TransactionsControllerImpl) GetByCampaignID(ctx *gin.Context) {
 	input := web.CampaignTransactionsInput{}
 	err := ctx.ShouldBindUri(&input)
 	if err != nil {
@@ -63,6 +125,6 @@ func (c *TransactionControllerImpl) GetByCampaignID(ctx *gin.Context) {
 		formatter.CampaignTransactionsFormatter(transactions)))
 }
 
-func NewTransactionController(transactionsService service.TransactionsService) TransactionsController {
-	return &TransactionControllerImpl{TransactionsService: transactionsService}
+func NewTransactionsController(transactionsService service.TransactionsService, midtransService service.MidtransService) TransactionsController {
+	return &TransactionsControllerImpl{transactionsService, midtransService}
 }

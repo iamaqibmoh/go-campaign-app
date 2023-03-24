@@ -25,6 +25,7 @@ func CampaignDetailFormatter(campaign domain.Campaign) web.CampaignDetailRespons
 		}
 		campaignDetailResponse.ImageURL = imageURL
 	}
+	campaignDetailResponse.BackerCount = campaign.BackerCount
 	campaignDetailResponse.GoalAmount = campaign.GoalAmount
 	campaignDetailResponse.CurrentAmount = campaign.CurrentAmount
 	campaignDetailResponse.Slug = campaign.Slug

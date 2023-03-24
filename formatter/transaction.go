@@ -46,3 +46,15 @@ func UserTransactionsFormatter(transactions []domain.Transaction) []web.UserTran
 
 	return userTransactionResponses
 }
+
+func MidtransTransactionFormatter(transaction domain.Transaction) web.MidtransTransactionResponse {
+	return web.MidtransTransactionResponse{
+		ID:         transaction.ID,
+		CampaignID: transaction.CampaignID,
+		UserID:     transaction.UserID,
+		Amount:     transaction.Amount,
+		Status:     transaction.Status,
+		Code:       transaction.Code,
+		PaymentURL: transaction.PaymentURL,
+	}
+}

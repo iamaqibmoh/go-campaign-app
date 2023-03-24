@@ -10,6 +10,27 @@ type TransactionsRepositoryImpl struct {
 	db *gorm.DB
 }
 
+func (r *TransactionsRepositoryImpl) FindByID(id int) (domain.Transaction, error) {
+	tr := domain.Transaction{}
+	err := r.db.Where("id=?", id).Find(&tr).Error
+	helper.PanicIfError(err)
+	return tr, nil
+}
+
+func (r *TransactionsRepositoryImpl) Update(transaction domain.Transaction) (domain.Transaction, error) {
+	err := r.db.Save(&transaction).Error
+	helper.PanicIfError(err)
+
+	return transaction, nil
+}
+
+func (r *TransactionsRepositoryImpl) Save(transaction domain.Transaction) (domain.Transaction, error) {
+	err := r.db.Create(&transaction).Error
+	helper.PanicIfError(err)
+
+	return transaction, nil
+}
+
 func (r *TransactionsRepositoryImpl) FindByUserID(userID int) ([]domain.Transaction, error) {
 	var transactions []domain.Transaction
 	err := r.db.Preload("Campaign.CampaignImages", "campaign_images.is_primary=1").
