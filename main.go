@@ -7,6 +7,7 @@ import (
 	"bwa-campaign-app/middleware"
 	"bwa-campaign-app/repository"
 	"bwa-campaign-app/service"
+	viewsController "bwa-campaign-app/web/controller"
 )
 
 func main() {
@@ -32,8 +33,10 @@ func main() {
 	transactionsService := service.NewTransactionsService(transactionsRepository, campaignRepository, midtransService)
 	transactionsController := controller.NewTransactionsController(transactionsService, midtransService)
 
+	//views
+	userViewsController := viewsController.NewUserViewsController()
+
 	router := app.Router()
-	router.Static("/images", "./images")
 	api := router.Group("/api/v1")
 
 	//users endpoint
@@ -56,6 +59,9 @@ func main() {
 	api.GET("/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.GetByUserID)
 	api.POST("/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.CreateTransaction)
 	api.POST("/transactions/notification", transactionsController.GetMidtransNotification)
+
+	//views controller
+	router.GET("/users", userViewsController.Index)
 
 	router.Run(":2802")
 }
