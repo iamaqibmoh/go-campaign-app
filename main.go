@@ -34,7 +34,7 @@ func main() {
 	transactionsController := controller.NewTransactionsController(transactionsService, midtransService)
 
 	//views
-	userViewsController := viewsController.NewUserViewsController()
+	userViewsController := viewsController.NewUserViewsController(userService)
 
 	router := app.Router()
 	api := router.Group("/api/v1")
@@ -62,6 +62,8 @@ func main() {
 
 	//views controller
 	router.GET("/users", userViewsController.Index)
+	router.GET("/users/new", userViewsController.Create)
+	router.POST("/users", userViewsController.PostCreate)
 
 	router.Run(":2802")
 }

@@ -1,12 +1,21 @@
 package repository
 
 import (
+	"bwa-campaign-app/helper"
 	"bwa-campaign-app/model/domain"
 	"gorm.io/gorm"
 )
 
 type UserRepositoryImpl struct {
 	*gorm.DB
+}
+
+func (r *UserRepositoryImpl) FindAll() ([]domain.User, error) {
+	var users []domain.User
+	err := r.DB.Order("id desc").Find(&users).Error
+	helper.PanicIfError(err)
+
+	return users, nil
 }
 
 func (r *UserRepositoryImpl) FindByID(id int) (domain.User, error) {

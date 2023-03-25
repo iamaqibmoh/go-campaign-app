@@ -7,4 +7,5 @@ type UserRepository interface {
 	FindByEmail(email string) (domain.User, error)
 	FindByID(id int) (domain.User, error)
 	Update(user domain.User) (domain.User, error)
+	FindAll() ([]domain.User, error)
 }

@@ -13,6 +13,13 @@ type UserServiceImpl struct {
 	repository.UserRepository
 }
 
+func (s *UserServiceImpl) FindAllUsers() ([]domain.User, error) {
+	users, err := s.UserRepository.FindAll()
+	helper.PanicIfError(err)
+
+	return users, nil
+}
+
 func (s *UserServiceImpl) FindUserByID(id int) (domain.User, error) {
 	findByID, err := s.UserRepository.FindByID(id)
 	helper.PanicIfError(err)
