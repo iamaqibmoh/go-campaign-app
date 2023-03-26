@@ -39,7 +39,7 @@ func (r *CampaignRepositoryImpl) Save(campaign domain.Campaign) (domain.Campaign
 
 func (r *CampaignRepositoryImpl) FindAll() ([]domain.Campaign, error) {
 	var campaigns []domain.Campaign
-	err := r.db.Preload("CampaignImages", "campaign_images.is_primary=1").Find(&campaigns).Error
+	err := r.db.Preload("CampaignImages", "campaign_images.is_primary=1").Order("id desc").Find(&campaigns).Error
 	if err != nil {
 		return campaigns, err
 	}

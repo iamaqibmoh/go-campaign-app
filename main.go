@@ -33,8 +33,9 @@ func main() {
 	transactionsService := service.NewTransactionsService(transactionsRepository, campaignRepository, midtransService)
 	transactionsController := controller.NewTransactionsController(transactionsService, midtransService)
 
-	//views
+	//cms
 	userViewsController := viewsController.NewUserViewsController(userService)
+	campaignCMSController := viewsController.NewCampaignCMSController(campaignService, campaignImageService, userService)
 
 	router := app.Router()
 	api := router.Group("/api/v1")
@@ -60,7 +61,7 @@ func main() {
 	api.POST("/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.CreateTransaction)
 	api.POST("/transactions/notification", transactionsController.GetMidtransNotification)
 
-	//views controller
+	//user cms controller
 	router.GET("/users", userViewsController.Index)
 	router.GET("/users/new", userViewsController.Create)
 	router.POST("/users", userViewsController.PostCreate)
@@ -68,6 +69,16 @@ func main() {
 	router.POST("/users/update/:id", userViewsController.PostUpdate)
 	router.GET("/users/avatar/:id", userViewsController.UpdateAvatar)
 	router.POST("/users/avatar/:id", userViewsController.PostUpdateAvatar)
+
+	//campaign cms controller
+	router.GET("/campaigns", campaignCMSController.Index)
+	router.GET("/campaigns/show/:id", campaignCMSController.ShowDetail)
+	router.GET("/campaigns/new", campaignCMSController.Create)
+	router.POST("/campaigns", campaignCMSController.PostCreate)
+	router.GET("/campaigns/image/:id", campaignCMSController.UploadImage)
+	router.POST("/campaigns/image/:id", campaignCMSController.PostUploadImage)
+	router.GET("/campaigns/edit/:id", campaignCMSController.Update)
+	router.POST("/campaigns/update/:id", campaignCMSController.PostUpdate)
 
 	router.Run(":2802")
 }
