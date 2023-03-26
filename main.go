@@ -64,6 +64,10 @@ func main() {
 	router.GET("/users", userViewsController.Index)
 	router.GET("/users/new", userViewsController.Create)
 	router.POST("/users", userViewsController.PostCreate)
+	router.GET("/users/edit/:id", userViewsController.Update)
+	router.POST("/users/update/:id", userViewsController.PostUpdate)
+	router.GET("/users/avatar/:id", userViewsController.UpdateAvatar)
+	router.POST("/users/avatar/:id", userViewsController.PostUpdateAvatar)
 
 	router.Run(":2802")
 }

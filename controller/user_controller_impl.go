@@ -52,7 +52,7 @@ func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, helper.APIResponse(
-		"Avatar successfully uploaded",
+		"UpdateAvatar successfully uploaded",
 		200,
 		"success",
 		gin.H{"is_uploaded": true},

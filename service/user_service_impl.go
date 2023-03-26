@@ -13,6 +13,20 @@ type UserServiceImpl struct {
 	repository.UserRepository
 }
 
+func (s *UserServiceImpl) UpdateUser(input web.FormUpdateUserInput) (domain.User, error) {
+	user, err := s.UserRepository.FindByID(input.ID)
+	helper.PanicIfError(err)
+
+	user.Name = input.Name
+	user.Occupation = input.Occupation
+	user.Email = input.Email
+
+	update, err := s.UserRepository.Update(user)
+	helper.PanicIfError(err)
+
+	return update, nil
+}
+
 func (s *UserServiceImpl) FindAllUsers() ([]domain.User, error) {
 	users, err := s.UserRepository.FindAll()
 	helper.PanicIfError(err)
@@ -31,8 +45,8 @@ func (s *UserServiceImpl) FindUserByID(id int) (domain.User, error) {
 	return findByID, nil
 }
 
-func (s *UserServiceImpl) UploadAvatar(id int, fileLocation string) (domain.User, error) {
-	findByID, err := s.UserRepository.FindByID(id)
+func (s *UserServiceImpl) UploadAvatar(userID int, fileLocation string) (domain.User, error) {
+	findByID, err := s.UserRepository.FindByID(userID)
 	helper.PanicIfError(err)
 
 	findByID.Avatar = fileLocation
