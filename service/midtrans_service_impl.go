@@ -46,8 +46,8 @@ func (m *MidtransServiceImpl) PaymentProcess(input web.MidtransNotificationInput
 
 func (m *MidtransServiceImpl) GetPaymentURL(transaction domain.Transaction, user domain.User) string {
 	midclient := midtrans.NewClient()
-	midclient.ServerKey = "SB-Mid-server-45AdXWBv1X_mffLokUzpAX0q"
-	midclient.ClientKey = "SB-Mid-client-_WBGGYDD9ytviwYB"
+	midclient.ServerKey = ""
+	midclient.ClientKey = ""
 	midclient.APIEnvType = midtrans.Sandbox
 
 	var snapGateway midtrans.SnapGateway
