@@ -11,15 +11,15 @@ import (
 	"strconv"
 )
 
-type UserViewsController struct {
+type UserCMSController struct {
 	service.UserService
 }
 
-func NewUserViewsController(userService service.UserService) *UserViewsController {
-	return &UserViewsController{userService}
+func NewUserCMSController(userService service.UserService) *UserCMSController {
+	return &UserCMSController{userService}
 }
 
-func (c *UserViewsController) PostUpdateAvatar(ctx *gin.Context) {
+func (c *UserCMSController) PostUpdateAvatar(ctx *gin.Context) {
 	userID, _ := strconv.Atoi(ctx.Param("id"))
 	fileHeader, _ := ctx.FormFile("avatar")
 	path := fmt.Sprintf("images/%d-%s", userID, fileHeader.Filename)
@@ -39,12 +39,12 @@ func (c *UserViewsController) PostUpdateAvatar(ctx *gin.Context) {
 	ctx.Redirect(http.StatusFound, "/users")
 }
 
-func (c UserViewsController) UpdateAvatar(ctx *gin.Context) {
+func (c UserCMSController) UpdateAvatar(ctx *gin.Context) {
 	userID, _ := strconv.Atoi(ctx.Param("id"))
 	ctx.HTML(200, "user_avatar.gohtml", gin.H{"ID": userID})
 }
 
-func (c *UserViewsController) PostUpdate(ctx *gin.Context) {
+func (c *UserCMSController) PostUpdate(ctx *gin.Context) {
 	input := web.FormUpdateUserInput{}
 	err := ctx.ShouldBind(&input)
 	if err != nil {
@@ -64,7 +64,7 @@ func (c *UserViewsController) PostUpdate(ctx *gin.Context) {
 	ctx.Redirect(http.StatusFound, "/users")
 }
 
-func (c UserViewsController) Update(ctx *gin.Context) {
+func (c UserCMSController) Update(ctx *gin.Context) {
 	userID, _ := strconv.Atoi(ctx.Param("id"))
 	user, err := c.UserService.FindUserByID(userID)
 	if err != nil {
@@ -82,7 +82,7 @@ func (c UserViewsController) Update(ctx *gin.Context) {
 	ctx.HTML(200, "user_update.gohtml", input)
 }
 
-func (c *UserViewsController) PostCreate(ctx *gin.Context) {
+func (c *UserCMSController) PostCreate(ctx *gin.Context) {
 	input := web.FormCreateUserInput{}
 	err := ctx.ShouldBind(&input)
 	if err != nil {
@@ -106,11 +106,11 @@ func (c *UserViewsController) PostCreate(ctx *gin.Context) {
 	ctx.Redirect(http.StatusFound, "/users")
 }
 
-func (c *UserViewsController) Create(ctx *gin.Context) {
+func (c *UserCMSController) Create(ctx *gin.Context) {
 	ctx.HTML(200, "user_create.gohtml", nil)
 }
 
-func (c *UserViewsController) Index(ctx *gin.Context) {
+func (c *UserCMSController) Index(ctx *gin.Context) {
 	users, err := c.UserService.FindAllUsers()
 	if err != nil {
 		ctx.HTML(http.StatusInternalServerError, "error.gohtml", nil)

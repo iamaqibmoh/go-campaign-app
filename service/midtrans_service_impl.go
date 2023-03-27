@@ -10,13 +10,13 @@ import (
 )
 
 type MidtransServiceImpl struct {
-	repository.TransactionsRepository
+	repository.TransactionRepository
 	repository.CampaignRepository
 }
 
 func (m *MidtransServiceImpl) PaymentProcess(input web.MidtransNotificationInput) error {
 	orderID, _ := strconv.Atoi(input.OrderID)
-	transaction, err := m.TransactionsRepository.FindByID(orderID)
+	transaction, err := m.TransactionRepository.FindByID(orderID)
 	helper.PanicIfError(err)
 
 	if input.PaymentType == "credit_card" && input.TransactionStatus == "capture" && input.FraudStatus == "accept" {
@@ -27,7 +27,7 @@ func (m *MidtransServiceImpl) PaymentProcess(input web.MidtransNotificationInput
 		transaction.Status = "canceled"
 	}
 
-	updatedTransaction, err := m.TransactionsRepository.Update(transaction)
+	updatedTransaction, err := m.TransactionRepository.Update(transaction)
 	helper.PanicIfError(err)
 
 	campaign, err := m.CampaignRepository.FindByID(transaction.CampaignID)
@@ -72,6 +72,6 @@ func (m *MidtransServiceImpl) GetPaymentURL(transaction domain.Transaction, user
 	return token.RedirectURL
 }
 
-func NewMidtransService(transactionsRepository repository.TransactionsRepository, campaignRepository repository.CampaignRepository) MidtransService {
+func NewMidtransService(transactionsRepository repository.TransactionRepository, campaignRepository repository.CampaignRepository) MidtransService {
 	return &MidtransServiceImpl{transactionsRepository, campaignRepository}
 }

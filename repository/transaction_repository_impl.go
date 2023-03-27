@@ -6,32 +6,39 @@ import (
 	"gorm.io/gorm"
 )
 
-type TransactionsRepositoryImpl struct {
+type TransactionRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func (r *TransactionsRepositoryImpl) FindByID(id int) (domain.Transaction, error) {
+func (r *TransactionRepositoryImpl) FindAll() ([]domain.Transaction, error) {
+	var trxs []domain.Transaction
+	err := r.db.Preload("Campaign").Preload("User").Order("id desc").Find(&trxs).Error
+	helper.PanicIfError(err)
+	return trxs, nil
+}
+
+func (r *TransactionRepositoryImpl) FindByID(id int) (domain.Transaction, error) {
 	tr := domain.Transaction{}
 	err := r.db.Where("id=?", id).Find(&tr).Error
 	helper.PanicIfError(err)
 	return tr, nil
 }
 
-func (r *TransactionsRepositoryImpl) Update(transaction domain.Transaction) (domain.Transaction, error) {
+func (r *TransactionRepositoryImpl) Update(transaction domain.Transaction) (domain.Transaction, error) {
 	err := r.db.Save(&transaction).Error
 	helper.PanicIfError(err)
 
 	return transaction, nil
 }
 
-func (r *TransactionsRepositoryImpl) Save(transaction domain.Transaction) (domain.Transaction, error) {
+func (r *TransactionRepositoryImpl) Save(transaction domain.Transaction) (domain.Transaction, error) {
 	err := r.db.Create(&transaction).Error
 	helper.PanicIfError(err)
 
 	return transaction, nil
 }
 
-func (r *TransactionsRepositoryImpl) FindByUserID(userID int) ([]domain.Transaction, error) {
+func (r *TransactionRepositoryImpl) FindByUserID(userID int) ([]domain.Transaction, error) {
 	var transactions []domain.Transaction
 	err := r.db.Preload("Campaign.CampaignImages", "campaign_images.is_primary=1").
 		Where("user_id=?", userID).Order("id desc").
@@ -42,7 +49,7 @@ func (r *TransactionsRepositoryImpl) FindByUserID(userID int) ([]domain.Transact
 	return transactions, nil
 }
 
-func (r *TransactionsRepositoryImpl) FindByCampaignID(campaignID int) ([]domain.Transaction, error) {
+func (r *TransactionRepositoryImpl) FindByCampaignID(campaignID int) ([]domain.Transaction, error) {
 	var transactions []domain.Transaction
 	err := r.db.Preload("User").Where("campaign_id=?", campaignID).Order("id desc").Find(&transactions).Error
 	helper.PanicIfError(err)
@@ -50,6 +57,6 @@ func (r *TransactionsRepositoryImpl) FindByCampaignID(campaignID int) ([]domain.
 	return transactions, nil
 }
 
-func NewTransactionsRepository(db *gorm.DB) TransactionsRepository {
-	return &TransactionsRepositoryImpl{db: db}
+func NewTransactionsRepository(db *gorm.DB) TransactionRepository {
+	return &TransactionRepositoryImpl{db: db}
 }

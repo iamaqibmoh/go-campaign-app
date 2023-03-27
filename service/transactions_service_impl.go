@@ -9,9 +9,16 @@ import (
 )
 
 type TransactionsServiceImpl struct {
-	repository.TransactionsRepository
+	repository.TransactionRepository
 	repository.CampaignRepository
 	MidtransService
+}
+
+func (s *TransactionsServiceImpl) FindAllTransactions() ([]domain.Transaction, error) {
+	transactions, err := s.TransactionRepository.FindAll()
+	helper.PanicIfError(err)
+
+	return transactions, nil
 }
 
 func (s *TransactionsServiceImpl) CreateTransaction(input web.CreateTransactionInput) (domain.Transaction, error) {
@@ -21,20 +28,20 @@ func (s *TransactionsServiceImpl) CreateTransaction(input web.CreateTransactionI
 	tr.UserID = input.User.ID
 	tr.Status = "pending"
 
-	transaction, err := s.TransactionsRepository.Save(tr)
+	transaction, err := s.TransactionRepository.Save(tr)
 	helper.PanicIfError(err)
 
 	paymentURL := s.MidtransService.GetPaymentURL(transaction, input.User)
 	transaction.PaymentURL = paymentURL
 
-	update, err := s.TransactionsRepository.Update(transaction)
+	update, err := s.TransactionRepository.Update(transaction)
 	helper.PanicIfError(err)
 
 	return update, nil
 }
 
 func (s *TransactionsServiceImpl) GetByUserID(userID int) ([]domain.Transaction, error) {
-	transactions, err := s.TransactionsRepository.FindByUserID(userID)
+	transactions, err := s.TransactionRepository.FindByUserID(userID)
 	helper.PanicIfError(err)
 
 	return transactions, nil
@@ -48,16 +55,16 @@ func (s *TransactionsServiceImpl) GetByCampaignID(input web.CampaignTransactions
 		return nil, errors.New("You're not an owner of this campaign")
 	}
 
-	transactions, err := s.TransactionsRepository.FindByCampaignID(input.ID)
+	transactions, err := s.TransactionRepository.FindByCampaignID(input.ID)
 	helper.PanicIfError(err)
 
 	return transactions, nil
 }
 
-func NewTransactionsService(transactionRepository repository.TransactionsRepository, campaignRepository repository.CampaignRepository, midtransService MidtransService) TransactionsService {
+func NewTransactionsService(transactionRepository repository.TransactionRepository, campaignRepository repository.CampaignRepository, midtransService MidtransService) TransactionsService {
 	return &TransactionsServiceImpl{
-		TransactionsRepository: transactionRepository,
-		CampaignRepository:     campaignRepository,
-		MidtransService:        midtransService,
+		TransactionRepository: transactionRepository,
+		CampaignRepository:    campaignRepository,
+		MidtransService:       midtransService,
 	}
 }

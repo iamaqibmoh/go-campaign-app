@@ -34,8 +34,10 @@ func main() {
 	transactionsController := controller.NewTransactionsController(transactionsService, midtransService)
 
 	//cms
-	userViewsController := viewsController.NewUserViewsController(userService)
+	userCMSController := viewsController.NewUserCMSController(userService)
 	campaignCMSController := viewsController.NewCampaignCMSController(campaignService, campaignImageService, userService)
+	transactionCMSController := viewsController.NewTransactionCMSController(transactionsService)
+	sessionCMSController := viewsController.NewSessionCMSController(userService)
 
 	router := app.Router()
 	api := router.Group("/api/v1")
@@ -61,24 +63,32 @@ func main() {
 	api.POST("/transactions", middleware.AuthMiddleware(userAuth, userService), transactionsController.CreateTransaction)
 	api.POST("/transactions/notification", transactionsController.GetMidtransNotification)
 
-	//user cms controller
-	router.GET("/users", userViewsController.Index)
-	router.GET("/users/new", userViewsController.Create)
-	router.POST("/users", userViewsController.PostCreate)
-	router.GET("/users/edit/:id", userViewsController.Update)
-	router.POST("/users/update/:id", userViewsController.PostUpdate)
-	router.GET("/users/avatar/:id", userViewsController.UpdateAvatar)
-	router.POST("/users/avatar/:id", userViewsController.PostUpdateAvatar)
+	//users cms controller
+	router.GET("/users", middleware.WebCMSAuthMiddleware(), userCMSController.Index)
+	router.GET("/users/new", middleware.WebCMSAuthMiddleware(), userCMSController.Create)
+	router.POST("/users", middleware.WebCMSAuthMiddleware(), userCMSController.PostCreate)
+	router.GET("/users/edit/:id", middleware.WebCMSAuthMiddleware(), userCMSController.Update)
+	router.POST("/users/update/:id", middleware.WebCMSAuthMiddleware(), userCMSController.PostUpdate)
+	router.GET("/users/avatar/:id", middleware.WebCMSAuthMiddleware(), userCMSController.UpdateAvatar)
+	router.POST("/users/avatar/:id", middleware.WebCMSAuthMiddleware(), userCMSController.PostUpdateAvatar)
 
-	//campaign cms controller
-	router.GET("/campaigns", campaignCMSController.Index)
-	router.GET("/campaigns/show/:id", campaignCMSController.ShowDetail)
-	router.GET("/campaigns/new", campaignCMSController.Create)
-	router.POST("/campaigns", campaignCMSController.PostCreate)
-	router.GET("/campaigns/image/:id", campaignCMSController.UploadImage)
-	router.POST("/campaigns/image/:id", campaignCMSController.PostUploadImage)
-	router.GET("/campaigns/edit/:id", campaignCMSController.Update)
-	router.POST("/campaigns/update/:id", campaignCMSController.PostUpdate)
+	//campaigns cms controller
+	router.GET("/campaigns", middleware.WebCMSAuthMiddleware(), campaignCMSController.Index)
+	router.GET("/campaigns/show/:id", middleware.WebCMSAuthMiddleware(), campaignCMSController.ShowDetail)
+	router.GET("/campaigns/new", middleware.WebCMSAuthMiddleware(), campaignCMSController.Create)
+	router.POST("/campaigns", middleware.WebCMSAuthMiddleware(), campaignCMSController.PostCreate)
+	router.GET("/campaigns/image/:id", middleware.WebCMSAuthMiddleware(), campaignCMSController.UploadImage)
+	router.POST("/campaigns/image/:id", middleware.WebCMSAuthMiddleware(), campaignCMSController.PostUploadImage)
+	router.GET("/campaigns/edit/:id", middleware.WebCMSAuthMiddleware(), campaignCMSController.Update)
+	router.POST("/campaigns/update/:id", middleware.WebCMSAuthMiddleware(), campaignCMSController.PostUpdate)
+
+	//transactions cms controller
+	router.GET("/transactions", middleware.WebCMSAuthMiddleware(), transactionCMSController.ShowAll)
+
+	//sessions cms controller
+	router.GET("/login", sessionCMSController.NewSession)
+	router.POST("/sessions", sessionCMSController.Create)
+	router.GET("/logout", middleware.WebCMSAuthMiddleware(), sessionCMSController.Destroy)
 
 	router.Run(":2802")
 }

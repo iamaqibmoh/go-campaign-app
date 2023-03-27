@@ -5,10 +5,22 @@ import (
 	"bwa-campaign-app/helper"
 	"bwa-campaign-app/service"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
+
+func WebCMSAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		userIDSession := session.Get("test")
+
+		if userIDSession == nil {
+			c.Redirect(http.StatusFound, "/login")
+		}
+	}
+}
 
 func AuthMiddleware(auth auth.JWTAuth, service service.UserService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
