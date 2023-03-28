@@ -12,5 +12,6 @@ func UserResponseFormatter(user domain.User, token string) web.UserResponse {
 		Occupation: user.Occupation,
 		Email:      user.Email,
 		Token:      token,
+		ImageURL:   user.Avatar,
 	}
 }

@@ -44,6 +44,7 @@ func main() {
 
 	//users endpoint
 	api.POST("/users", userController.RegisterUser)
+	api.GET("/users/fetch", middleware.AuthMiddleware(userAuth, userService), userController.FetchUser)
 	api.POST("/sessions", userController.LoginUser)
 	api.POST("/email-checkers", userController.CheckEmailAvailability)
 	api.POST("/avatars", middleware.AuthMiddleware(userAuth, userService), userController.UploadAvatar)

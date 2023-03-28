@@ -17,6 +17,12 @@ type UserControllerImpl struct {
 	auth.JWTAuth
 }
 
+func (c *UserControllerImpl) FetchUser(ctx *gin.Context) {
+	user := ctx.MustGet("currentUser").(domain.User)
+	ctx.JSON(200, helper.APIResponse(
+		"Successfully fetch user data", 200, "success", formatter.UserResponseFormatter(user, "")))
+}
+
 func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
 	fileHeader, err := ctx.FormFile("avatar")
 	if err != nil {
