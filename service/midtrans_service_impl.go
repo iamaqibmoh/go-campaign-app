@@ -5,7 +5,9 @@ import (
 	"bwa-campaign-app/model/domain"
 	"bwa-campaign-app/model/web"
 	"bwa-campaign-app/repository"
+	"github.com/joho/godotenv"
 	"github.com/veritrans/go-midtrans"
+	"os"
 	"strconv"
 )
 
@@ -46,8 +48,11 @@ func (m *MidtransServiceImpl) PaymentProcess(input web.MidtransNotificationInput
 
 func (m *MidtransServiceImpl) GetPaymentURL(transaction domain.Transaction, user domain.User) string {
 	midclient := midtrans.NewClient()
-	midclient.ServerKey = ""
-	midclient.ClientKey = ""
+	err2 := godotenv.Load(".env")
+	helper.PanicIfError(err2)
+
+	midclient.ServerKey = os.Getenv("SERVER_KEY")
+	midclient.ClientKey = os.Getenv("CLIENT_KEY")
 	midclient.APIEnvType = midtrans.Sandbox
 
 	var snapGateway midtrans.SnapGateway

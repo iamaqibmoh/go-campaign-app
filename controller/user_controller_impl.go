@@ -39,11 +39,11 @@ func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
 
 	err = ctx.SaveUploadedFile(fileHeader, path)
 	if err != nil {
-		ctx.JSON(http.StatusUnprocessableEntity, helper.APIResponse(
+		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
 			"Failed to upload avatar",
-			http.StatusUnprocessableEntity,
-			"UnprocessableEntity",
-			gin.H{"is_uploaded": false}))
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
+			gin.H{"is_uploaded": false, "error": err.Error()}))
 		return
 	}
 

@@ -42,11 +42,11 @@ func (c *CampaignImageControllerImpl) CreateCampaignImage(ctx *gin.Context) {
 
 	err = ctx.SaveUploadedFile(fileHeader, path)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+		ctx.JSON(http.StatusUnprocessableEntity, helper.APIResponse(
 			"Failed to upload campaign image",
-			http.StatusBadRequest,
-			"BAD REQUEST",
-			gin.H{"is_uploaded": false}))
+			http.StatusUnprocessableEntity,
+			"UNPROCESSABLE ENTITY",
+			gin.H{"is_uploaded": false, "error": err.Error()}))
 		return
 	}
 

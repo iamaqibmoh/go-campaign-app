@@ -35,10 +35,10 @@ func (c *TransactionsControllerImpl) GetMidtransNotification(ctx *gin.Context) {
 
 	err = c.MidtransService.PaymentProcess(input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
 			"Failed to process notification transaction",
-			http.StatusBadRequest,
-			"BAD REQUEST",
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
 			err.Error()))
 		return
 	}
@@ -62,10 +62,10 @@ func (c *TransactionsControllerImpl) CreateTransaction(ctx *gin.Context) {
 
 	transaction, err := c.TransactionsService.CreateTransaction(input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
 			"Failed to create transactions",
-			http.StatusBadRequest,
-			"BAD REQUEST",
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
 			err.Error()))
 		return
 	}
@@ -82,8 +82,8 @@ func (c *TransactionsControllerImpl) GetByUserID(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
 			"Failed to user's transactions",
-			http.StatusBadRequest,
-			"BAD REQUEST",
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
 			gin.H{"errors": err.Error()}))
 		return
 	}
@@ -111,10 +111,10 @@ func (c *TransactionsControllerImpl) GetByCampaignID(ctx *gin.Context) {
 
 	transactions, err := c.TransactionsService.GetByCampaignID(input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, helper.APIResponse(
+		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
 			"Failed to campaign's transactions",
-			http.StatusBadRequest,
-			"BAD REQUEST",
+			http.StatusInternalServerError,
+			"INTERNAL SERVER ERROR",
 			gin.H{"errors": err.Error()}))
 		return
 	}
