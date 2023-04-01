@@ -6,9 +6,8 @@ import (
 	"bwa-campaign-app/service"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/google/uuid"
 	"net/http"
-	"strconv"
 )
 
 type SessionCMSController struct {
@@ -18,7 +17,8 @@ type SessionCMSController struct {
 func (c *SessionCMSController) Destroy(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	session.Clear()
-	session.Delete("test")
+	session.Delete("UAccess")
+
 	err := session.Save()
 	helper.PanicIfError(err)
 
@@ -48,8 +48,8 @@ func (c SessionCMSController) Create(ctx *gin.Context) {
 	}
 
 	session := sessions.Default(ctx)
-	userID, _ := bcrypt.GenerateFromPassword([]byte(strconv.Itoa(user.ID)), bcrypt.DefaultCost)
-	session.Set("test", userID)
+	valueSession := uuid.NewString()
+	session.Set("UAccess", valueSession)
 	session.Save()
 
 	ctx.Redirect(http.StatusFound, "/users")

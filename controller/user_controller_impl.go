@@ -30,7 +30,7 @@ func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
 			"Failed to upload avatar",
 			http.StatusBadRequest,
 			"BAD REQUEST",
-			gin.H{"is_uploaded": false}))
+			gin.H{"is_uploaded": false, "error": err.Error()}))
 		return
 	}
 
@@ -53,7 +53,7 @@ func (c *UserControllerImpl) UploadAvatar(ctx *gin.Context) {
 			"Failed to upload avatar",
 			http.StatusInternalServerError,
 			"INTERNAL SERVER ERROR",
-			gin.H{"is_uploaded": false}))
+			gin.H{"is_uploaded": false, "error": err.Error()}))
 		return
 	}
 
@@ -151,7 +151,7 @@ func (c *UserControllerImpl) RegisterUser(ctx *gin.Context) {
 	registerUser, err := c.UserService.RegisterUser(input)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, helper.APIResponse(
-			"Register failed, server is error",
+			"Register failed",
 			http.StatusInternalServerError,
 			"INTERNAL SERVER ERROR",
 			gin.H{"error": err.Error()}))

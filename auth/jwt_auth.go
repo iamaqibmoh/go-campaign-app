@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"bwa-campaign-app/helper"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 )
@@ -10,7 +11,7 @@ type JWTAuth interface {
 	ValidateToken(token string) (*jwt.Token, error)
 }
 
-var SECRET_KEY = []byte("inisecretkeyyangsulitsyekali")
+var SecretKey = []byte(helper.GetEnv("SECRET_KEY"))
 
 type JWTAuthImpl struct {
 }
@@ -22,7 +23,7 @@ func (auth *JWTAuthImpl) ValidateToken(token string) (*jwt.Token, error) {
 			return nil, errors.New("Invalid token")
 		}
 
-		return []byte(SECRET_KEY), nil
+		return SecretKey, nil
 	})
 
 	if err != nil {
@@ -38,7 +39,7 @@ func (auth *JWTAuthImpl) GenerateToken(userID int) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 
-	signedToken, err := token.SignedString(SECRET_KEY)
+	signedToken, err := token.SignedString(SecretKey)
 	if err != nil {
 		return signedToken, err
 	}

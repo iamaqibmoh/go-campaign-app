@@ -1,0 +1,551 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Go Crowdfunding Website",
+    "description": "RestFul API Documentations - Go Crowdfunding Website",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Mohammad Lukman Aqib",
+      "email": "mohammadlukmanaqib@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "description": "Go Crowdfunding Website Server",
+      "url": "http://localhost:2802/api/v1"
+    }
+  ],
+  "externalDocs": {
+    "description": "Github Account",
+    "url": "github.com/mazzlookman"
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": ["User Endpoints"],
+        "summary": "Register user endpoint",
+        "description": "This endpoint is in charge of handling new user registration, with a json request body.\n\n All request bodies cannot be empty and the email format must be correct. Otherwise, an exception validation will occur and registration will fail.",
+        "requestBody": {
+          "required": true,
+          "description": "Request body for register user endpoint",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "required": true,
+                    "minLength": 3
+                  },
+                  "occupation": {
+                    "type": "string",
+                    "required": true,
+                    "minLength": 3
+                  },
+                  "email": {
+                    "type": "string",
+                    "required": true,
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true,
+                    "minLength": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "If the user registration is successful, the server will send a response body:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+                }
+              }
+            },
+          "400": {
+            "description": "Register user error at clients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Register user error at server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          }
+          }
+        }
+      },
+    "/sessions": {
+      "post": {
+        "tags": ["User Endpoints"],
+        "summary": "Login user endpoint",
+        "description": "This endpoint handles login requests from new users",
+        "requestBody": {
+          "required": true,
+          "description": "Request body for login user request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "required": true,
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true,
+                    "minLength": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Login error at client",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Login error at server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email-checkers": {
+      "post": {
+        "tags": ["User Endpoints"],
+        "description": "This endpoint handles checking the user's email is available or not",
+        "summary": "Email availability checking endpoint",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "required": true,
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email is available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta" : {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "is_available": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email checking error at client",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Email checking error at server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/avatars": {
+      "post": {
+        "tags": ["User Endpoints"],
+        "description": "This endpoint handles uploading the user's avatar image",
+        "summary": "Uploading the user's avatar endpoint",
+        "requestBody": {
+          "required": true,
+          "content": {
+           "multipart/form-data": {
+             "schema": {
+               "type": "object",
+               "properties": {
+                 "avatar": {
+                   "type": "string",
+                   "format": "binary"
+                 }
+               }
+             }
+           }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload avatar is successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta" : {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "is_uploaded": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Upload avatar error at client",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UsersAvatarErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Upload avatar error at server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UsersAvatarErrorResponse"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fetch-user": {
+      "get": {
+        "tags": ["User Endpoints"],
+        "summary": "Fetch user endpoint",
+        "description": "This endpoint retrieves the currently logged in user data based on the user_id in the context.\n\nAutomatically called after the user login.",
+        "requestBody": {
+          "description": "Request body for fetch user endpoint from context",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fetch user data is successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/campaigns": {
+      "get": {
+        "tags": ["Campaign Endpoints"],
+        "description": "This endpoint fetches and displays campaigns data.\n\n- All existing campaigns if there is no query parameter\n- All campaigns belong to one user if the query parameter (?user_id=user_id)",
+        "summary": "Get all or by user's campaigns",
+        "parameters": [
+          {
+            "name": "user_id",
+            "description": "if get by user's campaigns",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get campaigns is successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaResponse"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CampaignsResponse"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MetaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "occupation": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UsersAvatarErrorResponse": {
+        "type": "object",
+        "properties": {
+          "is_uploaded": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "CampaignsResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "integer"
+          },
+          "short_description": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "goal_amount": {
+            "type": "integer"
+          },
+          "current_amount": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: mohammadlukmanaqib@gmail.com
+    name: Mohammad Lukman Aqib
+  description: RestFul API Documentations - Go Crowdfunding Website
+  title: Go Crowdfunding Website
+  version: 1.0.0
+externalDocs:
+  description: Github Account
+  url: github.com/mazzlookman
+servers:
+- description: Go Crowdfunding Website Server
+  url: http://localhost:2802/api/v1
+paths: {}
+components:
+  schemas: {}
+

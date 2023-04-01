@@ -103,6 +103,11 @@ func (s *UserServiceImpl) RegisterUser(input web.RegisterUserInput) (domain.User
 	user.PasswordHash = string(passwordHash)
 	user.Role = "user"
 
+	findByEmail, err := s.UserRepository.FindByEmail(input.Email)
+	if findByEmail.Email == input.Email {
+		return user, errors.New("Email not available")
+	}
+
 	//call repository.Save
 	save, err := s.UserRepository.Save(user)
 	if err != nil {

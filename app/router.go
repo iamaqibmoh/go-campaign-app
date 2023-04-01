@@ -1,12 +1,12 @@
 package app
 
 import (
-	"bwa-campaign-app/auth"
 	"bwa-campaign-app/helper"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func Router() *gin.Engine {
@@ -16,7 +16,7 @@ func Router() *gin.Engine {
 	router.Use(cors.Default())
 
 	//Cookie
-	newStore := cookie.NewStore(auth.SECRET_KEY)
+	newStore := cookie.NewStore([]byte(uuid.NewString()))
 	router.Use(sessions.Sessions("test", newStore))
 
 	//HTML Multi Templating

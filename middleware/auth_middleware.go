@@ -14,9 +14,9 @@ import (
 func WebCMSAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		userIDSession := session.Get("test")
+		userSession := session.Get("UAccess")
 
-		if userIDSession == nil {
+		if userSession == nil {
 			c.Redirect(http.StatusFound, "/login")
 		}
 	}

@@ -28,8 +28,8 @@ type CampaignImagesOfCampaignDetail struct {
 
 type CampaignResponse struct {
 	ID               int    `json:"id"`
-	UserID           int    `json:"user_id"`
 	Name             string `json:"name"`
+	UserID           int    `json:"user_id"`
 	ShortDescription string `json:"short_description"`
 	ImageURL         string `json:"image_url"`
 	GoalAmount       int    `json:"goal_amount"`
